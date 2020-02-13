@@ -11,6 +11,21 @@ namespace CSharpTest
     [TestClass]
     public class WorkDayCalculatorTests
     {
+        [TestMethod]
+        public void StartDateWithinWeekends()
+        {
+            DateTime startDate = new DateTime(2017, 4, 21);
+            int count = 5;
+            WeekEnd[] weekends = new WeekEnd[1]
+            {
+                new WeekEnd(new DateTime(2017, 4, 21), new DateTime(2017, 4, 21))
+            };
+
+            DateTime result = new WorkDayCalculator().Calculate(startDate, count, weekends);
+
+            Assert.IsTrue(result.Equals(new DateTime(2017,4,27)));
+        }
+
 
         [TestMethod]
         public void TestNoWeekEnd()
