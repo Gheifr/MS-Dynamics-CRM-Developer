@@ -12,49 +12,22 @@ namespace CSharpTest
         {
 
             int weekendsCount = 0;
+            DateTime estimatedEndDate = startDate.AddDays(dayCount - 1);
 
-            // check that weekends exists and not empty
-            if (!weekEnds.IsNullOrEmpty())
+            if (weekEnds.IsNullOrEmpty())
             {
-                foreach (WeekEnd item in weekEnds)
+                return estimatedEndDate;
+            }
+
+            foreach (WeekEnd item in weekEnds)
+            {
+                if (item.EndDate<startDate)
                 {
-
-                    // case when start date is within weekends range
-                    if (startDate >= item.StartDate && startDate <= item.EndDate)//)
-                    {
-                        if (!(item.StartDate == item.EndDate))
-                        {
-                            weekendsCount += (int)(item.EndDate - startDate).Days;
-                        }
-                        else
-                        {
-                            weekendsCount += 1;
-                        }
-                    }
-
-                    // start date should not be greater than weekends end date or 
-                    //weekend start should not be greater than start day plus already added days
-                    else if (startDate > item.EndDate || startDate.AddDays(dayCount + weekendsCount) < item.StartDate)
-                    {
-                        continue;
-                    }
-
-                    // case when weekend start date is within start day plus already added days
-                    else if (startDate.AddDays(dayCount + weekendsCount) >= item.StartDate)
-                    {
-                        if (!(item.StartDate == item.EndDate))
-                        {
-                            weekendsCount += (int)(item.EndDate - item.StartDate).Days;
-                        }
-                    }
+                    continue;
                 }
             }
-            else
-            {
-                return startDate.AddDays(dayCount - 1);
-            }
 
-            return startDate.AddDays(dayCount + weekendsCount);
+            return estimatedEndDate.AddDays(weekendsCount == 0 ? 0 : weekendsCount + 1);
         }
 
     }
