@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extention.cs" />
+    <Compile Include="WorkDayCalculatorException.cs" />
     <Compile Include="WorkDayCalculator.cs" />
     <Compile Include="IWorkDayCalculator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
