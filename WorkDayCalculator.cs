@@ -33,20 +33,37 @@ namespace CSharpTest
 
                 if (item.StartDate != item.EndDate)
                 {
-                    for (int i = 0; i <= item.EndDate.Day - startDate.Day; i++)
+                    for (int i = 0; i <= (item.EndDate - item.StartDate).Days; i++)
                     {
-                        actualWeekEnds.Add(startDate.AddDays(i));
+                        actualWeekEnds.Add(item.StartDate.AddDays(i));
                     }
                 }
                 else
                 {
-                    actualWeekEnds.Add(startDate);
+                    actualWeekEnds.Add(item.StartDate);
                 }
             }
 
-            
+            actualWeekEnds = actualWeekEnds
+                            .Distinct()
+                            .Where(x => x >= startDate)
+                            .ToList();
 
-            return estimatedEndDate.AddDays(actualWeekEnds.Count);
+            actualWeekEnds.Sort();
+
+            foreach (DateTime dt in actualWeekEnds)
+            {
+                if (dt <= estimatedEndDate)
+                {
+                    estimatedEndDate = estimatedEndDate.AddDays(1);
+                }
+                else if (dt > estimatedEndDate)
+                {
+                    break;
+                }
+            }
+
+            return estimatedEndDate;
         }
 
     }
