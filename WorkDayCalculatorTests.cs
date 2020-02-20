@@ -12,7 +12,7 @@ namespace CSharpTest
     public class WorkDayCalculatorTests
     {
         [TestMethod]
-        public void StartDateWithinWeekends()
+        public void TestStartDateWithinWeekends()
         {
             DateTime startDate = new DateTime(2017, 4, 21);
             int count = 5;
@@ -23,7 +23,7 @@ namespace CSharpTest
 
             DateTime result = new WorkDayCalculator().Calculate(startDate, count, weekends);
 
-            Assert.IsTrue(result.Equals(new DateTime(2017,4,27)));
+            Assert.IsTrue(result.Equals(new DateTime(2017,4,26)));
         }
 
 

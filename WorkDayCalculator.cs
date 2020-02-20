@@ -11,50 +11,59 @@ namespace CSharpTest
         public DateTime Calculate(DateTime startDate, int dayCount, WeekEnd[] weekEnds)
         {
 
-            int weekendsCount = 0;
-
-            // check that weekends exists and not empty
-            if (!weekEnds.IsNullOrEmpty())
+            if (dayCount < 0)
             {
-                foreach (WeekEnd item in weekEnds)
+                throw new WorkDayCalculatorException("Days count is less than 0!");
+            }
+
+            List<DateTime> actualWeekEnds = new List<DateTime>();
+            DateTime estimatedEndDate = startDate.AddDays(dayCount == 0 ? 0 : dayCount - 1);
+
+            if (weekEnds.IsNullOrEmpty())
+            {
+                return estimatedEndDate;
+            }
+
+            foreach (WeekEnd item in weekEnds)
+            {
+                if (item.EndDate < item.StartDate)
                 {
+                    throw new WorkDayCalculatorException("Weekend period end date is less than it's start day!");
+                }
 
-                    // case when start date is within weekends range
-                    if (startDate >= item.StartDate && startDate <= item.EndDate)//)
+                if (item.StartDate != item.EndDate)
+                {
+                    for (int i = 0; i <= (item.EndDate - item.StartDate).Days; i++)
                     {
-                        if (!(item.StartDate == item.EndDate))
-                        {
-                            weekendsCount += (int)(item.EndDate - startDate).Days;
-                        }
-                        else
-                        {
-                            weekendsCount += 1;
-                        }
-                    }
-
-                    // start date should not be greater than weekends end date or 
-                    //weekend start should not be greater than start day plus already added days
-                    else if (startDate > item.EndDate || startDate.AddDays(dayCount + weekendsCount) < item.StartDate)
-                    {
-                        continue;
-                    }
-
-                    // case when weekend start date is within start day plus already added days
-                    else if (startDate.AddDays(dayCount + weekendsCount) >= item.StartDate)
-                    {
-                        if (!(item.StartDate == item.EndDate))
-                        {
-                            weekendsCount += (int)(item.EndDate - item.StartDate).Days;
-                        }
+                        actualWeekEnds.Add(item.StartDate.AddDays(i));
                     }
                 }
-            }
-            else
-            {
-                return startDate.AddDays(dayCount - 1);
+                else
+                {
+                    actualWeekEnds.Add(item.StartDate);
+                }
             }
 
-            return startDate.AddDays(dayCount + weekendsCount);
+            actualWeekEnds = actualWeekEnds
+                            .Distinct()
+                            .Where(x => x >= startDate)
+                            .ToList();
+
+            actualWeekEnds.Sort();
+
+            foreach (DateTime dt in actualWeekEnds)
+            {
+                if (dt <= estimatedEndDate)
+                {
+                    estimatedEndDate = estimatedEndDate.AddDays(1);
+                }
+                else if (dt > estimatedEndDate)
+                {
+                    break;
+                }
+            }
+
+            return estimatedEndDate;
         }
 
     }
